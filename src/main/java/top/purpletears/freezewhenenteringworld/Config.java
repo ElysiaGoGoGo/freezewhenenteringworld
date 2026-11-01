@@ -11,21 +11,20 @@ public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     /**
-     * TOML 配置里的持久开关（common，默认 {@code false}）。
+     * TOML 配置里的开关（common，默认 {@code false}），是模组<b>唯一</b>的「进入世界后是否立刻冻结」开关。
      * <p>
      * true 时：服务器（单人/集成服务器/专用服务器）启动完成、第一个 tick 之前，直接
      * {@code server.tickRateManager().setFrozen(true)}，效果等价于进入世界时立刻执行 {@code /tick freeze}。
      * </p>
      * <p>
-     * 纯服务端（专服）没有开始界面按钮，就靠改这个配置文件控制；单人时也可以手动改。
-     * 开始界面按钮控制的是另一个「本次游戏会话」临时开关
-     * （{@link FreezeWhenEnteringWorld#sessionFreezeOnWorldEnter}），两者是「或」关系。
+     * 默认关闭。开始界面按钮切换的就是这个值（写入并保存 TOML，因此会记住上次状态）；
+     * 纯服务端（专服）没有开始界面，直接改配置文件即可控制。两处操作的是同一个开关。
      * </p>
      */
     public static final ModConfigSpec.BooleanValue FREEZE_ON_WORLD_ENTER = BUILDER
             .comment("If true, freeze the world (like /tick freeze) as soon as it is loaded, before the first tick.",
-                    "This is the persistent/server-side switch: a dedicated server can enable it here, no client needed.",
-                    "The title-screen button is a separate per-session switch; either one enables the freeze.")
+                    "Default: false. The title-screen button toggles and saves this value, so the last state is remembered.",
+                    "Dedicated servers can enable it here without any client.")
             .define("freezeOnWorldEnter", false);
 
     static final ModConfigSpec SPEC = BUILDER.build();

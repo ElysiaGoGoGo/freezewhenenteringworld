@@ -35,12 +35,12 @@ public class FreezeWhenEnteringWorldClient {
     /**
      * 在标题界面（开始界面）插入一个开关按钮。
      * <p>
-     * 这个按钮控制的是**本次游戏会话**的临时开关 {@link FreezeWhenEnteringWorld#sessionFreezeOnWorldEnter}：
-     * 默认关闭，不写盘，重启游戏后回到关闭；开启后进入任何存档都会在进入世界时立刻冻结。
+     * 按钮<b>直接切换</b> TOML 配置 {@link Config#FREEZE_ON_WORLD_ENTER}：点击时读取当前值、取反、
+     * 写入并保存（{@code ConfigValue#set + save}），所以会持久化、记住上次状态。
+     * 默认关闭；开启后进入任何存档都会在进入世界时（第一个 tick 之前）冻结。
      * </p>
      * <p>
-     * 持久/服务端开关是 TOML 配置里的 {@link Config#FREEZE_ON_WORLD_ENTER}（默认关闭，专服用它控制）。
-     * 当配置已经开启时，按钮会显示「开（配置文件）」并禁用，避免两个开关互相打架。
+     * 纯服务端（专服）没有标题界面，直接改同一个 TOML 配置即可控制。
      * </p>
      */
     @SubscribeEvent
@@ -49,51 +49,47 @@ public class FreezeWhenEnteringWorldClient {
             return;
         }
 
-        boolean configForced = isConfigForced();
-        Button toggleButton = Button.builder(configForced ? configForcedMessage() : sessionMessage(), button -> {
-            // 由 TOML 配置开启时按钮已禁用，这里再兜底一次
-            if (isConfigForced()) {
-                return;
-            }
-            FreezeWhenEnteringWorld.sessionFreezeOnWorldEnter = !FreezeWhenEnteringWorld.sessionFreezeOnWorldEnter;
-            button.setMessage(sessionMessage());
-            FreezeWhenEnteringWorld.LOGGER.info("[FreezeWhenEnteringWorld] 开始界面本次会话开关切换为: {}",
-                    FreezeWhenEnteringWorld.sessionFreezeOnWorldEnter ? "开" : "关");
+        Button toggleButton = Button.builder(toggleMessage(), button -> {
+            boolean enabled = !isFreezeEnabled();
+            setFreezeEnabled(enabled);
+            button.setMessage(toggleMessage());
+            FreezeWhenEnteringWorld.LOGGER.info("[FreezeWhenEnteringWorld] 开始界面开关切换为: {}", enabled ? "开" : "关");
         }).bounds(TOGGLE_X, TOGGLE_Y, TOGGLE_WIDTH, TOGGLE_HEIGHT)
-                .tooltip(Tooltip.create(Component.translatable(configForced
-                        ? "freezewhenenteringworld.title.freeze_toggle.tooltip.config"
-                        : "freezewhenenteringworld.title.freeze_toggle.tooltip")))
+                .tooltip(Tooltip.create(Component.translatable("freezewhenenteringworld.title.freeze_toggle.tooltip")))
                 .build();
-        toggleButton.active = !configForced;
 
         event.addListener(toggleButton);
     }
 
-    /** 会话开关按钮文本：开启为绿色 "进入世界冻结: 开"，关闭为灰色 "进入世界冻结: 关"。 */
-    private static Component sessionMessage() {
-        boolean enabled = FreezeWhenEnteringWorld.sessionFreezeOnWorldEnter;
+    /** 生成按钮文本：开启为绿色 "进入世界冻结: 开"，关闭为灰色 "进入世界冻结: 关"。 */
+    private static Component toggleMessage() {
+        boolean enabled = isFreezeEnabled();
         return Component.translatable(
                         enabled ? "freezewhenenteringworld.title.freeze_toggle.on"
                                 : "freezewhenenteringworld.title.freeze_toggle.off")
                 .withStyle(enabled ? ChatFormatting.GREEN : ChatFormatting.GRAY);
     }
 
-    /** 被 TOML 配置强制开启时的按钮文本（按钮同时会被禁用）。 */
-    private static Component configForcedMessage() {
-        return Component.translatable("freezewhenenteringworld.title.freeze_toggle.config_on")
-                .withStyle(ChatFormatting.GREEN);
-    }
-
     /**
      * 读取 TOML 配置开关。common 配置在标题界面之前已经加载，这里做防御性处理，
      * 避免配置尚未加载时打开标题界面导致崩溃。
      */
-    private static boolean isConfigForced() {
+    private static boolean isFreezeEnabled() {
         try {
             return Config.FREEZE_ON_WORLD_ENTER.getAsBoolean();
         } catch (Exception exception) {
             FreezeWhenEnteringWorld.LOGGER.error("读取 TOML 配置 freezeOnWorldEnter 失败，按关闭处理", exception);
             return false;
+        }
+    }
+
+    /** 写入并保存 TOML 配置，实现「记住上次状态」的持久化。 */
+    private static void setFreezeEnabled(boolean enabled) {
+        try {
+            Config.FREEZE_ON_WORLD_ENTER.set(enabled);
+            Config.FREEZE_ON_WORLD_ENTER.save();
+        } catch (Exception exception) {
+            FreezeWhenEnteringWorld.LOGGER.error("保存 TOML 配置 freezeOnWorldEnter 失败", exception);
         }
     }
 }
