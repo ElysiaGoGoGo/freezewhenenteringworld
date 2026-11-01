@@ -1,0 +1,14 @@
+{
+  "block.freezewhenenteringworld.npe_block": "NPE Block",
+
+  "freezewhenenteringworld.title.freeze_toggle.on": "Freeze on world enter: ON",
+  "freezewhenenteringworld.title.freeze_toggle.off": "Freeze on world enter: OFF",
+  "freezewhenenteringworld.title.freeze_toggle.config_on": "Freeze on world enter: ON (config)",
+  "freezewhenenteringworld.title.freeze_toggle.tooltip": "Per-session switch (default OFF). Enables freeze-on-world-enter only for this game session; it resets when you restart the game. For a persistent/server-side switch use the TOML config 'freezeOnWorldEnter'.",
+  "freezewhenenteringworld.title.freeze_toggle.tooltip.config": "Enabled by the TOML config 'freezeOnWorldEnter' in config/freezewhenenteringworld-common.toml. Edit that file (or the mod config screen) to change it.",
+
+  "freezewhenenteringworld.configuration.title": "FreezeWhenEnteringWorld Configs",
+  "freezewhenenteringworld.configuration.section.freezewhenenteringworld.common.toml": "FreezeWhenEnteringWorld Configs",
+  "freezewhenenteringworld.configuration.section.freezewhenenteringworld.common.toml.title": "FreezeWhenEnteringWorld Configs",
+  "freezewhenenteringworld.configuration.freezeOnWorldEnter": "Freeze on World Enter"
+}
