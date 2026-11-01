@@ -3,9 +3,7 @@
 
   "freezewhenenteringworld.title.freeze_toggle.on": "进入世界冻结: 开",
   "freezewhenenteringworld.title.freeze_toggle.off": "进入世界冻结: 关",
-  "freezewhenenteringworld.title.freeze_toggle.config_on": "进入世界冻结: 开（配置文件）",
-  "freezewhenenteringworld.title.freeze_toggle.tooltip": "本次游戏会话的临时开关，默认关闭，重启游戏后回到关闭。持久/服务端的开关请改 TOML 配置 freezeOnWorldEnter。",
-  "freezewhenenteringworld.title.freeze_toggle.tooltip.config": "已由 TOML 配置 freezeOnWorldEnter 开启。修改 config/freezewhenenteringworld-common.toml（或模组配置界面）可切换。",
+  "freezewhenenteringworld.title.freeze_toggle.tooltip": "直接切换并保存 TOML 配置 freezeOnWorldEnter（默认关闭）。开启后进入任何存档都会在进入世界时立刻冻结；状态会持久化，重启游戏后保持上次状态。专服可直接改 config/freezewhenenteringworld-common.toml。",
 
   "freezewhenenteringworld.configuration.title": "FreezeWhenEnteringWorld 配置",
   "freezewhenenteringworld.configuration.section.freezewhenenteringworld.common.toml": "FreezeWhenEnteringWorld 通用配置",

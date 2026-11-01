@@ -7,9 +7,9 @@
 - 在 **第一个 tick 之前** 冻结世界（`ServerStartedEvent` → `server.tickRateManager().setFrozen(true)`）：
   `gameTime`、实体、方块实体、随机刻、红石、天气等世界内容不再更新；
 - 冻结语义与 `/tick freeze` 一致：**玩家不被冻结**，仍可移动、放/挖方块、开 GUI、聊天；
-- 两个开关，**任一开启即冻结**：
-  - **标题界面左上角按钮**：本次游戏会话的临时开关，默认关闭，不写盘，重启游戏回到关闭；
-  - **TOML 配置 `freezeOnWorldEnter`**：持久开关，默认 `false`，纯服务端（专服）通过它控制；
+- **一个持久开关**（TOML 配置 `freezeOnWorldEnter`，默认 `false`）：
+  - **标题界面左上角按钮**直接切换它并写盘保存，所以会记住上次状态；
+  - 纯服务端（专服）没有标题界面，直接改同一个配置文件即可；
 - 提供一个测试方块 `freezewhenenteringworld:npe_block`：方块实体每 tick 抛 NPE，
   可用来观察「世界是否在 tick」（冻结时不触发，解冻后第一个 tick 触发）。
 
@@ -24,8 +24,7 @@
 freezeOnWorldEnter = false
 ```
 
-- 默认关闭；标题界面按钮控制的是另一个「本次会话」开关，二者互不覆盖；
-- 专服没有标题界面，直接改这个文件（改完重启服务器/重新进入世界生效）。
+- 默认关闭；标题界面按钮直接切换并保存该值（记住上次状态）；专服改同一文件即可；
 
 详细说明见 [docs/05-toml-config.md](docs/05-toml-config.md)。
 

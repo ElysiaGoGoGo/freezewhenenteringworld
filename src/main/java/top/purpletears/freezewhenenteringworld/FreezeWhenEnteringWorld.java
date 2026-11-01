@@ -32,15 +32,6 @@ public class FreezeWhenEnteringWorld {
     public static final String MODID = "freezewhenenteringworld";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
-    /**
-     * 开始界面按钮切换的「本次游戏会话」临时开关，默认关闭，不写盘、不持久化（重启游戏回到关闭）。
-     * <p>
-     * 它与 TOML 配置里的持久开关 {@link Config#FREEZE_ON_WORLD_ENTER} 是「或」关系：
-     * 任意一个为 true，进入世界时都会在第一个 tick 之前冻结。纯服务端（专服）没有开始界面，
-     * 由 TOML 配置控制；单人时可以直接点按钮，也可以改配置。
-     * </p>
-     */
-    public static boolean sessionFreezeOnWorldEnter = false;
     // Create a Deferred Register to hold Blocks which will all be registered under the "freezewhenenteringworld" namespace
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     // Create a Deferred Register to hold BlockEntityTypes which will all be registered under the "freezewhenenteringworld" namespace
@@ -91,26 +82,21 @@ public class FreezeWhenEnteringWorld {
      * 世界加载完成、但**第一个 tick 还没跑**的唯一时机（详见 docs/02-world-start-tick-timing.md）。
      * 在这里冻结世界，可以让第 1 个 tick 起世界内容就不再更新（gameTime 停在 0）。
      * <p>
-     * 单人/集成服务器与专用服务器都会触发该事件。开关是「或」关系：
+     * 单人/集成服务器与专用服务器都会触发该事件。开关只有一个：
+     * TOML 配置 {@link Config#FREEZE_ON_WORLD_ENTER}（默认 false，持久化）。
+     * 单人时由开始界面按钮直接切换它（按钮会写回并保存配置）；纯服务端（专服）
+     * 没有开始界面，直接改配置文件控制。
      * </p>
-     * <ul>
-     *     <li>{@link Config#FREEZE_ON_WORLD_ENTER}：TOML 配置里的持久开关（默认 false），
-     *     纯服务端（专服）没有客户端/开始界面，就靠它控制；</li>
-     *     <li>{@link #sessionFreezeOnWorldEnter}：开始界面按钮切换的本次会话临时开关（默认 false，不持久化）。</li>
-     * </ul>
      */
     @SubscribeEvent
     public void onServerStarted(ServerStartedEvent event) {
-        boolean configFreeze = Config.FREEZE_ON_WORLD_ENTER.getAsBoolean();
-        boolean sessionFreeze = sessionFreezeOnWorldEnter;
-        if (!configFreeze && !sessionFreeze) {
+        if (!Config.FREEZE_ON_WORLD_ENTER.getAsBoolean()) {
             LOGGER.info("[FreezeWhenEnteringWorld] 进入世界冻结开关: 关 -> 世界正常 tick");
             return;
         }
 
         // ServerTickRateManager#setFrozen 会自动把 ticking_state 广播给已在线玩家（新玩家由 PlayerList 补发）
         event.getServer().tickRateManager().setFrozen(true);
-        LOGGER.info("[FreezeWhenEnteringWorld] 进入世界冻结开关: 开(来源: {}) -> 世界已加载,在第一个 tick 之前冻结",
-                configFreeze ? "TOML 配置 freezeOnWorldEnter" : "开始界面本次会话开关");
+        LOGGER.info("[FreezeWhenEnteringWorld] 进入世界冻结开关: 开(来源: TOML 配置 freezeOnWorldEnter) -> 世界已加载,在第一个 tick 之前冻结");
     }
 }
