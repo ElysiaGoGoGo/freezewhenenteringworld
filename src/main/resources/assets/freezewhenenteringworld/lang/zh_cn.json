@@ -13,5 +13,16 @@
   "commands.freezewhenenteringworld.freeze.on": "已冻结世界（仅本次会话）",
   "commands.freezewhenenteringworld.freeze.off": "已恢复世界 tick（仅本次会话）",
   "commands.freezewhenenteringworld.freeze.status.frozen": "世界当前处于冻结状态（仅本次会话）",
-  "commands.freezewhenenteringworld.freeze.status.running": "世界当前正常 tick"
+  "commands.freezewhenenteringworld.freeze.status.running": "世界当前正常 tick",
+
+  "item.freezewhenenteringworld.entity_removal_wand": "生物实体移除杖",
+  "entity.freezewhenenteringworld.pigee": "猪咪",
+  "entity.freezewhenenteringworld.npe_living": "NPE 测试生物（每 tick 抛 NPE）",
+
+  "message.freezewhenenteringworld.entity_removal_wand.removed": "已移除 %s",
+  "message.freezewhenenteringworld.entity_removal_wand.failed": "未能移除 %s。请先开启危险清除模式（Shift+右键空气/方块）再试。",
+  "message.freezewhenenteringworld.entity_removal_wand.replaced": "%s 已被替换为一只猪咪。",
+  "message.freezewhenenteringworld.entity_removal_wand.dangerous_on": "危险清除模式：开。强制替换很危险，其他代码可能仍持有旧实体引用。",
+  "message.freezewhenenteringworld.entity_removal_wand.dangerous_off": "危险清除模式：关。",
+  "message.freezewhenenteringworld.entity_removal_wand.player": "无法用这根杖移除玩家。"
 }
