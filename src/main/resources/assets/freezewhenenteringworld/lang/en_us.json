@@ -8,5 +8,16 @@
   "freezewhenenteringworld.configuration.title": "FreezeWhenEnteringWorld Configs",
   "freezewhenenteringworld.configuration.section.freezewhenenteringworld.common.toml": "FreezeWhenEnteringWorld Configs",
   "freezewhenenteringworld.configuration.section.freezewhenenteringworld.common.toml.title": "FreezeWhenEnteringWorld Configs",
-  "freezewhenenteringworld.configuration.freezeOnWorldEnter": "Freeze on World Enter"
+  "freezewhenenteringworld.configuration.freezeOnWorldEnter": "Freeze on World Enter",
+
+  "item.freezewhenenteringworld.entity_removal_wand": "Entity Removal Wand",
+  "entity.freezewhenenteringworld.pigee": "pigee",
+  "entity.freezewhenenteringworld.npe_living": "NPE Living Entity",
+
+  "message.freezewhenenteringworld.entity_removal_wand.removed": "Removed %s",
+  "message.freezewhenenteringworld.entity_removal_wand.failed": "Could not remove %s. Turn on dangerous removal mode (Shift+right-click air/block) and try again.",
+  "message.freezewhenenteringworld.entity_removal_wand.replaced": "%s was replaced by a pigee.",
+  "message.freezewhenenteringworld.entity_removal_wand.dangerous_on": "Dangerous removal mode: ON. Forced replacement may leave other code holding a stale entity reference.",
+  "message.freezewhenenteringworld.entity_removal_wand.dangerous_off": "Dangerous removal mode: OFF.",
+  "message.freezewhenenteringworld.entity_removal_wand.player": "Players cannot be removed with this wand."
 }
