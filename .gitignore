@@ -1,61 +1,25 @@
-# ============================================================
-# FreezeWhenEnteringWorld - NeoForge mod (Minecraft 1.21.1)
-# Git ignore rules. Generated/build/dev-only files are ignored;
-# sources, resources, docs and gradle wrapper are tracked.
-# ============================================================
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
 
-### Gradle ###
-.gradle/
-build/
-docs/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/**/build/
-
-### IntelliJ IDEA ###
-.idea/
+# idea
+out
+*.ipr
 *.iws
 *.iml
-*.ipr
-out/
-!**/src/**/out/
-### Eclipse / Compiler / Language Server ###
-.apt_generated
-.classpath
-.eclipse/
-.factorypath
-.project
-.settings/
-.springBeans
-.sts4-cache/
-bin/
-!**/src/**/bin/
+.idea
 
-### VS Code / Cursor ###
-.vscode/
+# gradle
+build
+.gradle
 
-### NetBeans ###
-nbproject/
+# other
+eclipse
+run
 
-### Gradle run / Minecraft dev workspace ###
-.run/
-run/
-!**/src/**/run/
-repo/
-!**/src/**/repo/
-**/src/generated/**/.cache/
-
-### Minecraft / NeoForge runtime output ###
-logs/
-crash-reports/
-*.log
-
-### JVM crash dumps / profiling output ###
-hs_err_pid*
-replay_pid*
-*.hprof
-*.jfr
-
-### OS metadata ###
-.DS_Store
-Thumbs.db
-Desktop.ini
+# Files from Forge MDK
+forge*changelog.txt
