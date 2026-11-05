@@ -1,77 +1,67 @@
 package top.purpletears.freezewhenenteringworld;
 
-import org.slf4j.Logger;
-
 import com.mojang.logging.LogUtils;
-
-import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
+import org.slf4j.Logger;
 import top.purpletears.freezewhenenteringworld.block.NpeBlock;
 import top.purpletears.freezewhenenteringworld.blockentity.NpeBlockEntity;
+import top.purpletears.freezewhenenteringworld.command.FreezeCommand;
+import top.purpletears.freezewhenenteringworld.freeze.FreezeState;
+import top.purpletears.freezewhenenteringworld.network.FreezeNetwork;
 
-// The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(FreezeWhenEnteringWorld.MODID)
 public class FreezeWhenEnteringWorld {
-    // Define mod id in a common place for everything to reference
     public static final String MODID = "freezewhenenteringworld";
-    // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
-    // Create a Deferred Register to hold Blocks which will all be registered under the "freezewhenenteringworld" namespace
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    // Create a Deferred Register to hold BlockEntityTypes which will all be registered under the "freezewhenenteringworld" namespace
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
-    // Create a Deferred Register to hold Items which will all be registered under the "freezewhenenteringworld" namespace
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    // NPE 测试方块：方块实体每 tick 抛出一个 NullPointerException，用于观测世界是否已经开始 tick
-    public static final DeferredBlock<NpeBlock> NPE_BLOCK = BLOCKS.registerBlock("npe_block", NpeBlock::new,
-            BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(3.5F).requiresCorrectToolForDrops());
-    // 对应的 BlockItem，让方块能以物品形式获得
-    public static final DeferredItem<BlockItem> NPE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("npe_block", NPE_BLOCK);
-    // 方块实体类型：把 NpeBlockEntity 绑定到 npe_block 上
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NpeBlockEntity>> NPE_BLOCK_ENTITY =
-            BLOCK_ENTITIES.register("npe_block", () -> BlockEntityType.Builder.of(NpeBlockEntity::new, NPE_BLOCK.get()).build(null));
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MODID);
 
-    // The constructor for the mod class is the first code that is run when your mod is loaded.
-    // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
-    public FreezeWhenEnteringWorld(IEventBus modEventBus, ModContainer modContainer) {
-        // Register the Deferred Register to the mod event bus so blocks get registered
+    public static final RegistryObject<NpeBlock> NPE_BLOCK = BLOCKS.register("npe_block",
+            () -> new NpeBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.STONE)
+                    .strength(3.5F)
+                    .requiresCorrectToolForDrops()));
+
+    public static final RegistryObject<BlockItem> NPE_BLOCK_ITEM = ITEMS.register("npe_block",
+            () -> new BlockItem(NPE_BLOCK.get(), new Item.Properties()));
+
+    public static final RegistryObject<BlockEntityType<NpeBlockEntity>> NPE_BLOCK_ENTITY = BLOCK_ENTITIES.register("npe_block",
+            () -> BlockEntityType.Builder.of(NpeBlockEntity::new, NPE_BLOCK.get()).build(null));
+
+    public FreezeWhenEnteringWorld() {
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCKS.register(modEventBus);
-        // Register the Deferred Register to the mod event bus so block entity types get registered
-        BLOCK_ENTITIES.register(modEventBus);
-        // Register the Deferred Register to the mod event bus so items get registered
         ITEMS.register(modEventBus);
-
-        // 把 NPE 测试方块加入建筑方块创造标签，方便在创造模式里取得
+        BLOCK_ENTITIES.register(modEventBus);
         modEventBus.addListener(this::addCreative);
-
-        // Register ourselves for server and other game events we are interested in.
-        // Note that this is necessary if and only if we want *this* class (FreezeWhenEnteringWorld) to respond directly to events.
-        // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
-        NeoForge.EVENT_BUS.register(this);
-
-
-        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        MinecraftForge.EVENT_BUS.register(this);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        FreezeNetwork.register();
     }
 
-    // 把 NPE 测试方块加入建筑方块创造标签，方便在创造模式里取得
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(NPE_BLOCK_ITEM);
@@ -79,24 +69,38 @@ public class FreezeWhenEnteringWorld {
     }
 
     /**
-     * 世界加载完成、但**第一个 tick 还没跑**的唯一时机（详见 docs/02-world-start-tick-timing.md）。
-     * 在这里冻结世界，可以让第 1 个 tick 起世界内容就不再更新（gameTime 停在 0）。
+     * 注册 /freeze on|off|status(权限等级 4,仅影响本次会话)。
+     */
+    @SubscribeEvent
+    public void onRegisterCommands(RegisterCommandsEvent event) {
+        FreezeCommand.register(event.getDispatcher());
+    }
+
+    /**
+     * 在服务器世界加载完成之后、第一个 tick 之前触发。
      * <p>
-     * 单人/集成服务器与专用服务器都会触发该事件。开关只有一个：
-     * TOML 配置 {@link Config#FREEZE_ON_WORLD_ENTER}（默认 false，持久化）。
-     * 单人时由开始界面按钮直接切换它（按钮会写回并保存配置）；纯服务端（专服）
-     * 没有开始界面，直接改配置文件控制。
-     * </p>
+     * 1.20.1 没有 TickRateManager,这里把状态写入 {@link FreezeState},
+     * 由 Mixin 在 tick 管线的各个入口处取消世界内容的 tick。
      */
     @SubscribeEvent
     public void onServerStarted(ServerStartedEvent event) {
-        if (!Config.FREEZE_ON_WORLD_ENTER.getAsBoolean()) {
-            LOGGER.info("[FreezeWhenEnteringWorld] 进入世界冻结开关: 关 -> 世界正常 tick");
-            return;
-        }
+        boolean freeze = Config.FREEZE_ON_WORLD_ENTER.get();
+        FreezeState.setFrozen(freeze);
 
-        // ServerTickRateManager#setFrozen 会自动把 ticking_state 广播给已在线玩家（新玩家由 PlayerList 补发）
-        event.getServer().tickRateManager().setFrozen(true);
-        LOGGER.info("[FreezeWhenEnteringWorld] 进入世界冻结开关: 开(来源: TOML 配置 freezeOnWorldEnter) -> 世界已加载,在第一个 tick 之前冻结");
+        if (freeze) {
+            LOGGER.info("进入世界冻结开关: 开 -> 世界已加载,在第一个 tick 之前冻结(Mixin 实现)");
+        } else {
+            LOGGER.info("进入世界冻结开关: 关 -> 世界正常 tick");
+        }
+    }
+
+    /**
+     * 玩家(含单人客户端)进入服务器时同步冻结状态,避免专用服务器上客户端继续 tick 世界。
+     */
+    @SubscribeEvent
+    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            FreezeNetwork.sendTo(serverPlayer, FreezeState.isFrozen());
+        }
     }
 }

@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "top.purpletears.freezewhenenteringworld.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "freezewhenenteringworld.refmap.json",
+  "mixins": [
+    "LevelMixin",
+    "LevelTicksMixin",
+    "RaidsMixin",
+    "ServerLevelMixin"
+  ],
+  "client": [
+    "ClientLevelMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

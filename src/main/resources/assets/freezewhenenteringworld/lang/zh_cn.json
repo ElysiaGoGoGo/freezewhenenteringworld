@@ -8,5 +8,10 @@
   "freezewhenenteringworld.configuration.title": "FreezeWhenEnteringWorld 配置",
   "freezewhenenteringworld.configuration.section.freezewhenenteringworld.common.toml": "FreezeWhenEnteringWorld 通用配置",
   "freezewhenenteringworld.configuration.section.freezewhenenteringworld.common.toml.title": "FreezeWhenEnteringWorld 通用配置",
-  "freezewhenenteringworld.configuration.freezeOnWorldEnter": "进入世界时冻结"
+  "freezewhenenteringworld.configuration.freezeOnWorldEnter": "进入世界时冻结",
+
+  "commands.freezewhenenteringworld.freeze.on": "已冻结世界（仅本次会话）",
+  "commands.freezewhenenteringworld.freeze.off": "已恢复世界 tick（仅本次会话）",
+  "commands.freezewhenenteringworld.freeze.status.frozen": "世界当前处于冻结状态（仅本次会话）",
+  "commands.freezewhenenteringworld.freeze.status.running": "世界当前正常 tick"
 }

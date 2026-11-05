@@ -8,5 +8,10 @@
   "freezewhenenteringworld.configuration.title": "FreezeWhenEnteringWorld Configs",
   "freezewhenenteringworld.configuration.section.freezewhenenteringworld.common.toml": "FreezeWhenEnteringWorld Configs",
   "freezewhenenteringworld.configuration.section.freezewhenenteringworld.common.toml.title": "FreezeWhenEnteringWorld Configs",
-  "freezewhenenteringworld.configuration.freezeOnWorldEnter": "Freeze on World Enter"
+  "freezewhenenteringworld.configuration.freezeOnWorldEnter": "Freeze on World Enter",
+
+  "commands.freezewhenenteringworld.freeze.on": "Freeze enabled for this session",
+  "commands.freezewhenenteringworld.freeze.off": "Freeze disabled for this session",
+  "commands.freezewhenenteringworld.freeze.status.frozen": "The world is frozen (this session)",
+  "commands.freezewhenenteringworld.freeze.status.running": "The world is running normally"
 }
